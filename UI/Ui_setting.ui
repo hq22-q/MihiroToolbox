@@ -200,7 +200,18 @@
   <customwidget>
    <class>ComboBox</class>
    <extends>QPushButton</extends>
-   <header>qfluentwidgets</header>
+   <header location="global">qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LargeTitleLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header location="global">qfluentwidgets</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CardWidget</class>
@@ -225,20 +236,9 @@
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>LargeTitleLabel</class>
-   <extends>QLabel</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
    <class>CheckBox</class>
    <extends>QCheckBox</extends>
    <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>ScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header>qfluentwidgets</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

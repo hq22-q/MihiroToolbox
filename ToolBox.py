@@ -28,7 +28,7 @@ class ToolBox(SplitFluentWindow):
         old_x,oldy, width, height = self.frameGeometry().getRect() 
         self.move(int(x - width / 2), int(y - height / 2))
 
-        # 添加视频子界面
+        # 添加考勤子界面
         self.AttendanceInterface = AttendanceInterface(self)
         self.addSubInterface(self.AttendanceInterface, FluentIcon.CAFE, '考勤')
 
