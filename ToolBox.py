@@ -5,21 +5,17 @@ import configparser
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QSplashScreen, QDesktopWidget
-
 from qfluentwidgets import SplitFluentWindow, FluentIcon, NavigationItemPosition, setTheme, Theme
 
-from VideoInterface import VideoInterface
-from AudioInterface import AudioInterface
-from CommonInterface import CommonInterface
-from PackageInterface import PackageInterface
+from AttendanceInterface import AttendanceInterface
 from SettingInterface import SettingInterface
 
 
-class MihiroToolBox(SplitFluentWindow):
+class ToolBox(SplitFluentWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('MihiroToolBox')
+        self.setWindowTitle('工具箱')
         self.setWindowIcon(QIcon('img/logo.png'))
         
         # 设置默认大小
@@ -33,26 +29,12 @@ class MihiroToolBox(SplitFluentWindow):
         self.move(int(x - width / 2), int(y - height / 2))
 
         # 添加视频子界面
-        self.VideoInterface = VideoInterface(self)
-        self.addSubInterface(self.VideoInterface, FluentIcon.VIDEO, '视频')
-
-        # 添加音频子界面
-        self.AudioInterface = AudioInterface(self)
-        self.addSubInterface(self.AudioInterface, FluentIcon.MUSIC, '音频')
-
-        # 添加通用子界面
-        self.CommonInterface = CommonInterface(self)
-        self.addSubInterface(self.CommonInterface,
-                             FluentIcon.APPLICATION, '常用')
-
-        # 添加封装子界面
-        self.PackageInterface = PackageInterface(self)
-        self.addSubInterface(self.PackageInterface, FluentIcon.MEDIA, '封装')
+        self.AttendanceInterface = AttendanceInterface(self)
+        self.addSubInterface(self.AttendanceInterface, FluentIcon.CAFE, '考勤')
 
         # 添加设置子界面
         self.SettingInterface = SettingInterface(self)
-        self.addSubInterface(
-            self.SettingInterface, FluentIcon.SETTING, '设置', NavigationItemPosition.BOTTOM)
+        self.addSubInterface(self.SettingInterface, FluentIcon.SETTING, '设置', NavigationItemPosition.BOTTOM)
 
 
 if __name__ == '__main__':
@@ -83,10 +65,10 @@ if __name__ == '__main__':
 
     splash = QSplashScreen()
     splash.setPixmap(QPixmap(r'img/splash.png'))
-    if(showSplash == '1'):
+    if showSplash == '1':
         splash.show()
     
-    ex = MihiroToolBox()
+    ex = ToolBox()
     ex.show()
     splash.finish(ex)  # 主界面加载完成后隐藏
     splash.deleteLater()

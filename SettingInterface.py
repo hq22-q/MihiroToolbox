@@ -12,10 +12,6 @@ class SettingInterface(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        
-        self.HyperlinkLabel.setUrl('https://github.com/Eanya-Tonic/MihiroToolbox')
-        
-        self.ImageLabel.setPixmap(QPixmap('img/logo.png').scaledToHeight(100))
 
         # 选择主题
         
@@ -34,15 +30,7 @@ class SettingInterface(QWidget, Ui_Form):
         splash = conf.get('DEFAULT', 'splash')
         self.LaunchCheck.setChecked(bool(int(splash)))
         self.LaunchCheck.clicked.connect(self.LaunchCheckClicked)
-        
-        # 开关ScrollArea
-        ScrollUI = conf.get('DEFAULT', 'ScrollUI')
-        
-        self.ThemeBox_2.addItem('禁用')
-        self.ThemeBox_2.addItem('启用')
-        
-        self.ThemeBox_2.setCurrentIndex(int(ScrollUI))
-        self.ThemeBox_2.currentIndexChanged.connect(self.ScrollChanged)
+
         
         
     # 选择主题
@@ -55,23 +43,6 @@ class SettingInterface(QWidget, Ui_Form):
         InfoBar.info(
                 title='提示',
                 content="主题修改重启应用后生效",
-                orient=Qt.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.BOTTOM_RIGHT,
-                duration=5000,
-                parent=self
-            )
-    
-    # 开关ScrollArea
-    def ScrollChanged(self):
-        conf = configparser.ConfigParser()
-        conf.read('config.ini')
-        conf.set('DEFAULT', 'ScrollUI', str(self.ThemeBox_2.currentIndex()))
-        conf.write(open('config.ini', 'w'))
-        
-        InfoBar.info(
-                title='提示',
-                content="重启应用后生效",
                 orient=Qt.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.BOTTOM_RIGHT,

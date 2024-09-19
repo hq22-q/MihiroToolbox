@@ -55,7 +55,7 @@
         </font>
        </property>
        <property name="text">
-        <string>设置</string>
+        <string>@</string>
        </property>
        <property name="margin">
         <number>0</number>
@@ -97,94 +97,21 @@
         <property name="styleSheet">
          <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
         </property>
-        <widget class="QWidget" name="layoutWidget">
+        <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
           <rect>
-           <x>0</x>
-           <y>-5</y>
-           <width>711</width>
-           <height>104</height>
+           <x>50</x>
+           <y>30</y>
+           <width>501</width>
+           <height>80</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="SubtitleLabel" name="FileTitle">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>微软雅黑</family>
-              <pointsize>15</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
+           <widget class="ComboBox" name="pushButton">
             <property name="text">
-             <string>界面设置</string>
+             <string>123</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="SimpleCardWidget" name="SimpleCardWidget">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="leftMargin">
-              <number>25</number>
-             </property>
-             <property name="topMargin">
-              <number>16</number>
-             </property>
-             <property name="rightMargin">
-              <number>16</number>
-             </property>
-             <property name="bottomMargin">
-              <number>16</number>
-             </property>
-             <item alignment="Qt::AlignHCenter">
-              <widget class="CheckBox" name="LaunchCheck">
-               <property name="text">
-                <string>显示启动画面</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="BodyLabel" name="inputLabel">
-                 <property name="font">
-                  <font>
-                   <family>微软雅黑</family>
-                   <pointsize>11</pointsize>
-                   <weight>50</weight>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>程序主题</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="ComboBox" name="ThemeBox"/>
-               </item>
-              </layout>
-             </item>
-            </layout>
            </widget>
           </item>
          </layout>
@@ -200,38 +127,11 @@
   <customwidget>
    <class>ComboBox</class>
    <extends>QPushButton</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>CardWidget</class>
-   <extends>QFrame</extends>
-   <header>qfluentwidgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SimpleCardWidget</class>
-   <extends>CardWidget</extends>
-   <header>qfluentwidgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BodyLabel</class>
-   <extends>QLabel</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>SubtitleLabel</class>
-   <extends>QLabel</extends>
-   <header>qfluentwidgets</header>
+   <header location="global">qfluentwidgets</header>
   </customwidget>
   <customwidget>
    <class>LargeTitleLabel</class>
    <extends>QLabel</extends>
-   <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>CheckBox</class>
-   <extends>QCheckBox</extends>
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
