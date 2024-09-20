@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'UI_attendance.ui'
+# Form implementation generated from reading ui file 'Ui_attendance.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(889, 815)
+        Form.resize(736, 815)
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
@@ -22,19 +22,46 @@ class Ui_Form(object):
         self.verticalLayout_4.setSpacing(16)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.widget = QtWidgets.QWidget(Form)
+        self.widget.setMaximumSize(QtCore.QSize(16777215, 101))
         self.widget.setObjectName("widget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.widget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 30, 241, 51))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 30, 241, 54))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.comboBox = ComboBox(self.gridLayoutWidget)
-        self.comboBox.setObjectName("comboBox")
-        self.gridLayout.addWidget(self.comboBox, 0, 0, 1, 1)
         self.select = PushButton(self.gridLayoutWidget)
         self.select.setObjectName("select")
         self.gridLayout.addWidget(self.select, 0, 1, 1, 1)
+        self.comboBox = ComboBox(self.gridLayoutWidget)
+        self.comboBox.setObjectName("comboBox")
+        self.gridLayout.addWidget(self.comboBox, 0, 0, 1, 1)
+        self.formLayoutWidget = QtWidgets.QWidget(self.widget)
+        self.formLayoutWidget.setGeometry(QtCore.QRect(380, 10, 301, 81))
+        self.formLayoutWidget.setObjectName("formLayoutWidget")
+        self.formLayout = QtWidgets.QFormLayout(self.formLayoutWidget)
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.formLayout.setObjectName("formLayout")
+        self.startTime = TimePicker(self.formLayoutWidget)
+        self.startTime.setText("")
+        self.startTime.setObjectName("startTime")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.startTime)
+        self.label = PixmapLabel(self.formLayoutWidget)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
+        self.label_2 = PixmapLabel(self.formLayoutWidget)
+        self.label_2.setObjectName("label_2")
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        font.setBold(False)
+        self.label.setFont(font)
+        self.label_2.setFont(font)
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
+        self.endTime = TimePicker(self.formLayoutWidget)
+        self.endTime.setText("")
+        self.endTime.setObjectName("endTime")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.endTime)
         self.verticalLayout_4.addWidget(self.widget)
         self.ScrollArea = ScrollArea(Form)
         self.ScrollArea.setMaximumSize(QtCore.QSize(16777215, 618))
@@ -43,7 +70,7 @@ class Ui_Form(object):
         self.ScrollArea.setWidgetResizable(True)
         self.ScrollArea.setObjectName("ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 839, 618))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 700, 601))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(50)
         sizePolicy.setVerticalStretch(0)
@@ -65,6 +92,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.comboBox.setText(_translate("Form", "日期范围"))
         self.select.setText(_translate("Form", "查询"))
-from qfluentwidgets import ComboBox, PushButton, ScrollArea, TableWidget
+        self.comboBox.setText(_translate("Form", "日期范围"))
+        self.label.setText(_translate("Form", "上班时间:"))
+        self.label_2.setText(_translate("Form", "下班时间:"))
+from qfluentwidgets import ComboBox, PixmapLabel, PushButton, ScrollArea, TableWidget, TimePicker
