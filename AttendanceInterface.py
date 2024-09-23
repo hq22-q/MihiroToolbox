@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import redis
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate, QTime
 from PyQt5.QtGui import QBrush, QFont
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem
 import json
@@ -28,8 +28,11 @@ except Exception:
 class AttendanceInterface(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.dates = []
         self.setupUi(self)
-
+        self.start_time = QTime(9, 0, 0)
+        self.end_time = QTime(18, 0, 0)
+        self.id.setPlaceholderText("工号")
         comboBox = self.comboBox
         # 添加选项
         items = ['本月', '上月', '本年', '上年', '日期区间']
@@ -43,11 +46,28 @@ class AttendanceInterface(QWidget, Ui_Form):
         # 启用边框并设置圆角
         self.tableView.setBorderVisible(True)
         self.tableView.setBorderRadius(8)
-
         self.tableView.setWordWrap(False)
 
+        # 设置当前时间
+        self.startTime.setTime(self.start_time)
+        self.endTime.setTime(self.end_time)
+
+        # 获取当前时间
+        print(self.startTime.time)
+        print(self.endTime.time)
+
+        # 时间发生改变
+        self.startTime.timeChanged.connect(lambda time: self.setTime())
+        self.endTime.timeChanged.connect(lambda time: self.setTime())
+
+    def setTime(self):
+        self.start_time = self.startTime.time
+        self.end_time = self.endTime.time
+        self.showTable()
+
     def selectData(self):
-        self.showTable(self.get_attendance())
+        self.get_attendance()
+        self.showTable()
         if connect:
             print("")
             # json_array_from_redis = redis.get('attendanceID')
@@ -66,30 +86,32 @@ class AttendanceInterface(QWidget, Ui_Form):
                 parent=self
             )
 
-    def showTable(self, dates):
-        # 定义比较的时间
-        start = datetime.strptime("09:00:00", "%H:%M:%S")
-        mid = datetime.strptime("12:00:00", "%H:%M:%S")
-        end = datetime.strptime("20:30:00", "%H:%M:%S")
+    def showTable(self):
+        dates = self.dates
+        if len(dates) > 0:
+            # 定义比较的时间
+            start = self.start_time
+            mid = QTime(12, 0, 0)
+            end = self.end_time
 
-        self.tableView.setRowCount(len(dates[0]))
-        self.tableView.setColumnCount(3)
-        # 设置水平表头并隐藏垂直表头
-        self.tableView.setHorizontalHeaderLabels(['日期', '时间', '星期'])
-        self.tableView.verticalHeader().hide()
-        for i, date in enumerate(dates):
-            self.tableView.setColumnWidth(i, 180)
-            for j in range(len(date)):
-                item = QTableWidgetItem(date[j])
-                # 时间
-                if i == 1:
-                    time = datetime.strptime(date[j], "%H:%M:%S")
-                    if start < time < mid:
-                        #迟到
-                        item.setForeground(QBrush(Qt.red))
-                item.setFont(QFont('楷体', 15, QFont.Black))
-                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-                self.tableView.setItem(j, i, item)
+            self.tableView.setRowCount(len(dates[0]))
+            self.tableView.setColumnCount(3)
+            # 设置水平表头并隐藏垂直表头
+            self.tableView.setHorizontalHeaderLabels(['日期', '时间', '星期'])
+            self.tableView.verticalHeader().hide()
+            for i, date in enumerate(dates):
+                self.tableView.setColumnWidth(i, 180)
+                for j in range(len(date)):
+                    item = QTableWidgetItem(date[j])
+                    # 时间
+                    if i == 1:
+                        time = QTime.fromString(date[j], "HH:mm:ss")
+                        if start < time < mid:
+                            # 迟到
+                            item.setForeground(QBrush(Qt.red))
+                    item.setFont(QFont('楷体', 15, QFont.Black))
+                    item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                    self.tableView.setItem(j, i, item)
 
     def get_attendance(self):  # put application's code here
         # 可以通过 request 的 args 属性来获取参数
@@ -124,11 +146,11 @@ class AttendanceInterface(QWidget, Ui_Form):
         elif dateCode == '上年':
             # 上年
             where = 'Year(A.Date) =year(dateAdd(year,-1,getdate()))'
-        elif dateCode == '日期区间':
-            # 具体范围
-            beginDate = "beginDate"
-            endDate = "endDate"
-            where = "CONVERT(DATETIME,A.Date) >= CONVERT(DATETIME,'" + beginDate + "') and CONVERT(DATETIME,A.Date) <= CONVERT(DATETIME,'" + endDate + "')"
+        # elif dateCode == '日期区间':
+        #     # 具体范围
+        #     beginDate = "beginDate"
+        #     endDate = "endDate"
+        #     where = "CONVERT(DATETIME,A.Date) >= CONVERT(DATETIME,'" + beginDate + "') and CONVERT(DATETIME,A.Date) <= CONVERT(DATETIME,'" + endDate + "')"
         # 请求
         # c0-id=7166_1712905079013
         str = ["callCount=1",
@@ -200,4 +222,4 @@ class AttendanceInterface(QWidget, Ui_Form):
         data[0] = dates
         data[1] = times
         data[2] = weeks
-        return data
+        self.dates = data
