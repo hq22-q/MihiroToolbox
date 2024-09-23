@@ -17,15 +17,15 @@ class ToolBox(SplitFluentWindow):
         super().__init__()
         self.setWindowTitle('工具箱')
         self.setWindowIcon(QIcon('img/logo.png'))
-        
+
         # 设置默认大小
-        self.resize(800,800)
-        
+        self.resize(800, 800)
+
         # 调整窗口在屏幕中央显示
-        center_pointer = QDesktopWidget().availableGeometry().center() 
-        x = center_pointer.x() 
+        center_pointer = QDesktopWidget().availableGeometry().center()
+        x = center_pointer.x()
         y = center_pointer.y()
-        old_x,oldy, width, height = self.frameGeometry().getRect() 
+        old_x, oldy, width, height = self.frameGeometry().getRect()
         self.move(int(x - width / 2), int(y - height / 2))
 
         # 添加考勤子界面
@@ -38,14 +38,14 @@ class ToolBox(SplitFluentWindow):
 
 
 if __name__ == '__main__':
-    
+
     # 读取配置文件
     conf = configparser.ConfigParser()
 
     conf.read('config.ini')
     theme = conf.get('DEFAULT', 'theme')
     showSplash = conf.get('DEFAULT', 'splash')
-    
+
     # 启用高分屏
     QApplication.setHighDpiScaleFactorRoundingPolicy(
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
@@ -53,21 +53,20 @@ if __name__ == '__main__':
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # 设置主题
-    if(theme == '0'):
+    if theme == '0':
         setTheme(Theme.AUTO)
-    elif(theme == '1'):
+    elif theme == '1':
         setTheme(Theme.LIGHT)
-    elif(theme == '2'):
+    elif theme == '2':
         setTheme(Theme.DARK)
-    
+
     app = QApplication(sys.argv)
-    
 
     splash = QSplashScreen()
     splash.setPixmap(QPixmap(r'img/splash.png'))
     if showSplash == '1':
         splash.show()
-    
+
     ex = ToolBox()
     ex.show()
     splash.finish(ex)  # 主界面加载完成后隐藏

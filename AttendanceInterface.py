@@ -10,7 +10,7 @@ import requests
 from adodbapi import connect
 from qfluentwidgets import InfoBar, InfoBarPosition, window
 
-from UI.Ui_attendance import Ui_Form
+from UI.Ui_attendance import Ui_attendance
 
 host = "redis-12134.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com"
 port = 12134
@@ -25,7 +25,7 @@ except Exception:
     connect = False
 
 
-class AttendanceInterface(QWidget, Ui_Form):
+class AttendanceInterface(QWidget, Ui_attendance):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.dates = []
@@ -93,6 +93,11 @@ class AttendanceInterface(QWidget, Ui_Form):
             start = self.start_time
             mid = QTime(12, 0, 0)
             end = self.end_time
+            # 计算两个半小时的秒数
+            two_and_half_hours_in_seconds = 2 * 60 * 60 + 30 * 60  # 2小时 * 60分钟 * 60秒 + 30分钟 * 60秒
+
+            # 将时间加上两个半小时
+            end = end.addSecs(two_and_half_hours_in_seconds)
 
             self.tableView.setRowCount(len(dates[0]))
             self.tableView.setColumnCount(3)
@@ -109,6 +114,9 @@ class AttendanceInterface(QWidget, Ui_Form):
                         if start < time < mid:
                             # 迟到
                             item.setForeground(QBrush(Qt.red))
+                        elif end < time:
+                            # 加班
+                            item.setForeground(QBrush(Qt.blue))
                     item.setFont(QFont('楷体', 15, QFont.Black))
                     item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                     self.tableView.setItem(j, i, item)
