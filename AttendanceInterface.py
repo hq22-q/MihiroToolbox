@@ -192,14 +192,24 @@ class AttendanceInterface(QWidget, Ui_attendance):
         # redis.set("attendanceID",json_array)
 
         # 从 Redis 中获取 JSON 字符串
-        # json_array_from_redis = redis.get('attendanceID')
-        #
-        # # 解析 JSON 字符串为数组
-        # id_list = json.loads(json_array_from_redis)
+        json_array_from_redis = redis.get('attendanceID')
 
-        # print(id_list)
-        # if id not in id_list:
-        #     print("此工号不可查询!")
+        # 解析 JSON 字符串为数组
+        id_list = json.loads(json_array_from_redis)
+
+        print(id_list)
+        if id not in id_list:
+            print("此工号不可查询!")
+            InfoBar.error(
+                title="出错啦",
+                content="此工号不可查询!",
+                orient=Qt.Vertical,  # 内容太长时可使用垂直布局
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=2000,
+                parent=self
+            )
+            return
 
         dateCode = self.comboBox.currentText()
         if dateCode == '本月':
@@ -244,25 +254,25 @@ class AttendanceInterface(QWidget, Ui_attendance):
                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
                    }
 
-        # response = requests.post(url=url, data=data, headers=headers)
-        #
-        # text = response.text
-        # print(text)
-        # # 定义正则表达式
-        # date_pattern = r'\d{4}-\d{2}-\d{2}'
-        # time_pattern = r'\"(\d{1,2}:\d{2}(?::\d{2})?)\"'
-        #
-        # # 使用正则表达式提取日期
-        # dates = re.findall(date_pattern, text)
-        # times = re.findall(time_pattern, text)
-        dates = ['2024-09-02', '2024-09-02', '2024-09-03', '2024-09-03', '2024-09-04', '2024-09-04', '2024-09-05',
-                 '2024-09-05', '2024-09-06', '2024-09-06', '2024-09-09', '2024-09-09', '2024-09-10', '2024-09-10',
-                 '2024-09-11', '2024-09-11', '2024-09-12', '2024-09-12', '2024-09-13', '2024-09-13', '2024-09-18',
-                 '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20']
-        times = ['09:03:29', '18:09:40', '08:52:57', '18:08:59', '08:51:38', '18:31:32', '08:39:16', '18:08:30',
-                 '08:42:17', '18:36:55', '08:52:39', '18:22:58', '08:53:01', '18:21:48', '09:01:15', '18:06:58',
-                 '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '21:13:14', '08:51:12', '18:14:49',
-                 '08:49:49']
+        response = requests.post(url=url, data=data, headers=headers)
+
+        text = response.text
+        print(text)
+        # 定义正则表达式
+        date_pattern = r'\d{4}-\d{2}-\d{2}'
+        time_pattern = r'\"(\d{1,2}:\d{2}(?::\d{2})?)\"'
+
+        # 使用正则表达式提取日期
+        dates = re.findall(date_pattern, text)
+        times = re.findall(time_pattern, text)
+        # dates = ['2024-09-02', '2024-09-02', '2024-09-03', '2024-09-03', '2024-09-04', '2024-09-04', '2024-09-05',
+        #          '2024-09-05', '2024-09-06', '2024-09-06', '2024-09-09', '2024-09-09', '2024-09-10', '2024-09-10',
+        #          '2024-09-11', '2024-09-11', '2024-09-12', '2024-09-12', '2024-09-13', '2024-09-13', '2024-09-18',
+        #          '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20']
+        # times = ['09:03:29', '18:09:40', '08:52:57', '18:08:59', '08:51:38', '18:31:32', '08:39:16', '18:08:30',
+        #          '08:42:17', '18:36:55', '08:52:39', '18:22:58', '08:53:01', '18:21:48', '09:01:15', '18:06:58',
+        #          '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '21:13:14', '08:51:12', '18:14:49',
+        #          '08:49:49']
 
         # 打印提取的日期
         print("日期", dates)
