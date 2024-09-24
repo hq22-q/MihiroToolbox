@@ -1,8 +1,12 @@
+import configparser
+import copy
+from collections import Counter
 from datetime import datetime
 
 import redis
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QDate, QTime
-from PyQt5.QtGui import QBrush, QFont
+from PyQt5.QtGui import QBrush, QFont, QColor
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem
 import json
 import re
@@ -17,6 +21,9 @@ port = 12134
 password = "7PlhZNhVrIPLpvm0HVotfNKI02BLiqsm"
 connect = False
 
+conf = configparser.ConfigParser()
+conf.read('config.ini')
+
 try:
     redis = redis.Redis(host=host, port=port, password=password)
     redis.ping()
@@ -28,11 +35,41 @@ except Exception:
 class AttendanceInterface(QWidget, Ui_attendance):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.dates = []
+        self.dates = [[], [], []]
+        self.datesTemp = [[], [], []]
         self.setupUi(self)
+        id = conf.get('DEFAULT', 'id')
+
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        font.setBold(False)
+        self.label.setFont(font)
+        self.label_2.setFont(font)
+
+        font.setPointSize(11)
+        font.setBold(True)
+        self.late.setFont(font)
+        self.workOver.setFont(font)
+        self.late.setStyleSheet("QCheckBox { color: red; }")
+        self.workOver.setStyleSheet("QCheckBox { color: blue; }")
+
         self.start_time = QTime(9, 0, 0)
         self.end_time = QTime(18, 0, 0)
-        self.id.setPlaceholderText("工号")
+        self.id.setPlaceholderText("请输入工号")
+
+        # 定义比较的时间
+        self.start = self.start_time
+        self.mid = QTime(12, 0, 0)
+        self.end = self.end_time
+        # 计算两个半小时的秒数
+        two_and_half_hours_in_seconds = 2 * 60 * 60 + 30 * 60  # 2.5小时
+        # 将时间加上两个半小时
+        self.over = self.end.addSecs(two_and_half_hours_in_seconds)
+
+        # 启用清空按钮
+        self.id.setClearButtonEnabled(True)
+        self.id.setText(id)
         comboBox = self.comboBox
         # 添加选项
         items = ['本月', '上月', '本年', '上年', '日期区间']
@@ -60,6 +97,10 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.startTime.timeChanged.connect(lambda time: self.setTime())
         self.endTime.timeChanged.connect(lambda time: self.setTime())
 
+        # 监听复选框状态改变信号
+        self.late.stateChanged.connect(lambda: self.showTable())
+        self.workOver.stateChanged.connect(lambda: self.showTable())
+
     def setTime(self):
         self.start_time = self.startTime.time
         self.end_time = self.endTime.time
@@ -86,18 +127,35 @@ class AttendanceInterface(QWidget, Ui_attendance):
                 parent=self
             )
 
-    def showTable(self):
-        dates = self.dates
-        if len(dates) > 0:
-            # 定义比较的时间
-            start = self.start_time
-            mid = QTime(12, 0, 0)
-            end = self.end_time
-            # 计算两个半小时的秒数
-            two_and_half_hours_in_seconds = 2 * 60 * 60 + 30 * 60  # 2小时 * 60分钟 * 60秒 + 30分钟 * 60秒
+    def filter(self):
+        if not self.late.isChecked() and not self.workOver.isChecked():
+            self.datesTemp = copy.deepcopy(self.dates)
+        else:
+            times = self.dates[1]
+            indexList = []
+            i = 0
+            for time in times:
+                time = QTime.fromString(time, "HH:mm:ss")
+                if self.start < time < self.mid:
+                    # 迟到
+                    if self.late.isChecked():
+                        indexList.append(i)
+                elif self.over < time:
+                    # 加班
+                    if self.workOver.isChecked():
+                        indexList.append(i)
+                i = i + 1
 
-            # 将时间加上两个半小时
-            end = end.addSecs(two_and_half_hours_in_seconds)
+            self.datesTemp = [[], [], []]
+            for index in indexList:
+                self.datesTemp[0].append(self.dates[0][index])
+                self.datesTemp[1].append(self.dates[1][index])
+                self.datesTemp[2].append(self.dates[2][index])
+
+    def showTable(self):
+        self.filter()
+        dates = self.datesTemp
+        if len(dates) > 0:
 
             self.tableView.setRowCount(len(dates[0]))
             self.tableView.setColumnCount(3)
@@ -111,12 +169,14 @@ class AttendanceInterface(QWidget, Ui_attendance):
                     # 时间
                     if i == 1:
                         time = QTime.fromString(date[j], "HH:mm:ss")
-                        if start < time < mid:
+                        if self.start < time < self.mid:
                             # 迟到
                             item.setForeground(QBrush(Qt.red))
-                        elif end < time:
+                        elif self.over < time:
                             # 加班
                             item.setForeground(QBrush(Qt.blue))
+                    if i == 0 and "漏刷" in date[j]:
+                        item.setForeground(QBrush(QBrush(QColor(0, 191, 255))))
                     item.setFont(QFont('楷体', 15, QFont.Black))
                     item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                     self.tableView.setItem(j, i, item)
@@ -124,6 +184,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
     def get_attendance(self):  # put application's code here
         # 可以通过 request 的 args 属性来获取参数
         where = ''
+        id = self.id.text()
         # # 写入 redis 中
         # # 通过管道 pipeline 来操作 redis，以减少客户端与 redis-server 的交互次数。
         # list = ["123", "456"]
@@ -140,7 +201,6 @@ class AttendanceInterface(QWidget, Ui_attendance):
         # if id not in id_list:
         #     print("此工号不可查询!")
 
-        id = "16759"
         dateCode = self.comboBox.currentText()
         if dateCode == '本月':
             # 本月
@@ -198,11 +258,11 @@ class AttendanceInterface(QWidget, Ui_attendance):
         dates = ['2024-09-02', '2024-09-02', '2024-09-03', '2024-09-03', '2024-09-04', '2024-09-04', '2024-09-05',
                  '2024-09-05', '2024-09-06', '2024-09-06', '2024-09-09', '2024-09-09', '2024-09-10', '2024-09-10',
                  '2024-09-11', '2024-09-11', '2024-09-12', '2024-09-12', '2024-09-13', '2024-09-13', '2024-09-18',
-                 '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20', '2024-09-20']
+                 '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20']
         times = ['09:03:29', '18:09:40', '08:52:57', '18:08:59', '08:51:38', '18:31:32', '08:39:16', '18:08:30',
                  '08:42:17', '18:36:55', '08:52:39', '18:22:58', '08:53:01', '18:21:48', '09:01:15', '18:06:58',
-                 '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '18:13:14', '08:51:12', '18:14:49',
-                 '08:49:49', '08:53:07']
+                 '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '21:13:14', '08:51:12', '18:14:49',
+                 '08:49:49']
 
         # 打印提取的日期
         print("日期", dates)
@@ -227,7 +287,31 @@ class AttendanceInterface(QWidget, Ui_attendance):
             elif i == 6:
                 week = '星期日'
             weeks.append(week)
-        data[0] = dates
+        data[0] = process_dates(dates)
         data[1] = times
         data[2] = weeks
+
+        if len(dates) > 0:
+            conf.set('DEFAULT', 'id', self.id.text())
+            conf.write(open('config.ini', 'w'))
         self.dates = data
+
+
+def process_dates(dates):
+    # 计算每个日期出现的次数
+    date_counts = Counter(dates)
+
+    # 创建新的结果列表
+    result = []
+
+    # 遍历原始日期列表
+    for date in dates:
+        # 检查当前日期出现的次数
+        if date_counts[date] == 1:
+            # 如果只出现一次，加上“漏刷”
+            result.append( '(漏刷)'+date )
+        else:
+            # 否则直接添加日期
+            result.append(date)
+
+    return result

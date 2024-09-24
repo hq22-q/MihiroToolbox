@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>attendance</class>
+ <widget class="QWidget" name="attendance">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -43,7 +43,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>10</y>
+          <y>0</y>
           <width>241</width>
           <height>81</height>
          </rect>
@@ -72,7 +72,7 @@
         <property name="geometry">
          <rect>
           <x>380</x>
-          <y>10</y>
+          <y>0</y>
           <width>301</width>
           <height>81</height>
          </rect>
@@ -166,20 +166,20 @@
           <rect>
            <x>610</x>
            <y>0</y>
-           <width>71</width>
+           <width>73</width>
            <height>80</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QRadioButton" name="late">
+           <widget class="CheckBox" name="late">
             <property name="text">
              <string>迟到</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="workOver">
+           <widget class="CheckBox" name="workOver">
             <property name="text">
              <string>加班</string>
             </property>
@@ -229,6 +229,11 @@
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
+   <header location="global">qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
    <header location="global">qfluentwidgets</header>
   </customwidget>
  </customwidgets>
