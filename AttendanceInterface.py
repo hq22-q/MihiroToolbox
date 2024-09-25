@@ -77,7 +77,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         comboBox.addItems(items)
 
         # 当前选项的索引改变信号
-        comboBox.currentIndexChanged.connect(lambda index: print(comboBox.currentText()))
+        # comboBox.currentIndexChanged.connect(lambda index: print(comboBox.currentText()))
         button = self.select
         button.clicked.connect(lambda index: self.selectData())
 
@@ -95,8 +95,8 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.endTime.setTime(self.end_time)
 
         # 获取当前时间
-        print(self.startTime.time)
-        print(self.endTime.time)
+        # print(self.startTime.time)
+        # print(self.endTime.time)
 
         # 时间发生改变
         self.startTime.timeChanged.connect(lambda time: self.setTime())
@@ -113,6 +113,8 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.showTable()
 
     def selectData(self):
+        self.dates = [[], [], []]
+        self.datesTemp = [[], [], []]
         if connect:
             self.get_attendance()
             self.showTable()
@@ -144,13 +146,13 @@ class AttendanceInterface(QWidget, Ui_attendance):
                 time = QTime.fromString(time, "HH:mm:ss")
                 if self.start < time < self.mid and self.late.isChecked():
                     # 迟到
-                        indexList.append(i)
+                    indexList.append(i)
                 elif self.over < time and self.workOver.isChecked():
                     # 加班
-                        indexList.append(i)
+                    indexList.append(i)
                 elif "漏刷" in dates[i] and self.lake.isChecked():
                     # 漏刷
-                        indexList.append(i)
+                    indexList.append(i)
                 i = i + 1
 
             self.datesTemp = [[], [], []]
@@ -195,24 +197,26 @@ class AttendanceInterface(QWidget, Ui_attendance):
         # redis.set("attendanceID",json_array)
 
         # 从 Redis 中获取 JSON 字符串
-        json_array_from_redis = redis.get('attendanceID')
 
-        # 解析 JSON 字符串为数组
-        id_list = json.loads(json_array_from_redis)
+        m = redis.get('disableId').decode('utf-8')
+        if m == "T":
+            # 解析 JSON 字符串为数组
+            json_array_from_redis = redis.get('attendanceID')
+            id_list = json.loads(json_array_from_redis)
 
-        print(id_list)
-        if id not in id_list:
-            print("此工号不可查询!")
-            InfoBar.error(
-                title="出错啦",
-                content="此工号不可查询!",
-                orient=Qt.Vertical,  # 内容太长时可使用垂直布局
-                isClosable=True,
-                position=InfoBarPosition.TOP,
-                duration=2000,
-                parent=self
-            )
-            return
+            # print(id_list)
+            if id not in id_list:
+                # print("此工号不可查询!")
+                InfoBar.error(
+                    title="出错啦",
+                    content="此工号不可查询!",
+                    orient=Qt.Vertical,  # 内容太长时可使用垂直布局
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=2000,
+                    parent=self
+                )
+                return
 
         dateCode = self.comboBox.currentText()
         if dateCode == '本月':
