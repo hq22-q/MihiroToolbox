@@ -27,11 +27,11 @@ class SettingInterface(QWidget, Ui_setting):
 
         self.ThemeBox.setCurrentIndex(int(theme))
         self.ThemeBox.currentIndexChanged.connect(self.ThemeBoxChanged)
-
+        self.LaunchCheck.setVisible(False)
         # 关闭开屏画面
-        splash = conf.get('DEFAULT', 'splash')
-        self.LaunchCheck.setChecked(bool(int(splash)))
-        self.LaunchCheck.clicked.connect(self.LaunchCheckClicked)
+        # splash = conf.get('DEFAULT', 'splash')
+        # self.LaunchCheck.setChecked(bool(int(splash)))
+        # self.LaunchCheck.clicked.connect(self.LaunchCheckClicked)
 
     # 选择主题
     def ThemeBoxChanged(self):
@@ -39,16 +39,15 @@ class SettingInterface(QWidget, Ui_setting):
         conf.read('config.ini')
         conf.set('DEFAULT', 'theme', str(self.ThemeBox.currentIndex()))
         conf.write(open('config.ini', 'w'))
+        theme  = str(self.ThemeBox.currentIndex())
+        # 设置主题
+        if theme == '0':
+            setTheme(Theme.AUTO)
+        elif theme == '1':
+            setTheme(Theme.LIGHT)
+        elif theme == '2':
+            setTheme(Theme.DARK)
 
-        InfoBar.info(
-            title='提示',
-            content="主题修改重启应用后生效",
-            orient=Qt.Horizontal,
-            isClosable=True,
-            position=InfoBarPosition.BOTTOM_RIGHT,
-            duration=5000,
-            parent=self
-        )
 
     # 关闭开屏画面
     def LaunchCheckClicked(self):

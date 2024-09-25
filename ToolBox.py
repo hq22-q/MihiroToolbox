@@ -62,13 +62,13 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    splash = QSplashScreen()
-    splash.setPixmap(QPixmap(r'img/splash.png'))
-    if showSplash == '1':
-        splash.show()
+    # splash = QSplashScreen()
+    # splash.setPixmap(QPixmap(r'img/splash.png'))
+    # if showSplash == '1':
+    #     splash.show()
 
     ex = ToolBox()
     ex.show()
-    splash.finish(ex)  # 主界面加载完成后隐藏
-    splash.deleteLater()
+    # splash.finish(ex)  # 主界面加载完成后隐藏
+    # splash.deleteLater()
     sys.exit(app.exec_())
