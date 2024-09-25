@@ -15,14 +15,14 @@ from adodbapi import connect
 from qfluentwidgets import InfoBar, InfoBarPosition, window
 
 from UI.Ui_attendance import Ui_attendance
+from utils.ConfigSetting import ConfigSetting
 
 host = "redis-12134.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com"
 port = 12134
 password = "7PlhZNhVrIPLpvm0HVotfNKI02BLiqsm"
 connect = False
 
-conf = configparser.ConfigParser()
-conf.read('config.ini')
+conf = ConfigSetting()
 
 try:
     redis = redis.Redis(host=host, port=port, password=password)
@@ -38,7 +38,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.dates = [[], [], []]
         self.datesTemp = [[], [], []]
         self.setupUi(self)
-        id = conf.get('DEFAULT', 'id')
+        id = conf.get( 'id')
 
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -73,7 +73,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.id.setText(id)
         comboBox = self.comboBox
         # 添加选项
-        items = ['本月', '上月', '本年', '上年', '日期区间']
+        items = ['本月', '上月', '本年', '上年']
         comboBox.addItems(items)
 
         # 当前选项的索引改变信号
@@ -309,8 +309,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         data[2] = weeks
 
         if len(dates) > 0:
-            conf.set('DEFAULT', 'id', self.id.text())
-            conf.write(open('config.ini', 'w'))
+            conf.set('id', self.id.text())
         self.dates = data
 
 

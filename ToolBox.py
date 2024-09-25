@@ -9,6 +9,7 @@ from qfluentwidgets import SplitFluentWindow, FluentIcon, NavigationItemPosition
 
 from AttendanceInterface import AttendanceInterface
 from SettingInterface import SettingInterface
+from utils.ConfigSetting import ConfigSetting
 
 
 class ToolBox(SplitFluentWindow):
@@ -40,11 +41,9 @@ class ToolBox(SplitFluentWindow):
 if __name__ == '__main__':
 
     # 读取配置文件
-    conf = configparser.ConfigParser()
-
-    conf.read('config.ini')
-    theme = conf.get('DEFAULT', 'theme')
-    showSplash = conf.get('DEFAULT', 'splash')
+    conf = ConfigSetting()
+    theme = conf.get( 'theme')
+    showSplash = conf.get('splash')
 
     # 启用高分屏
     QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -62,13 +61,13 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    # splash = QSplashScreen()
-    # splash.setPixmap(QPixmap(r'img/splash.png'))
-    # if showSplash == '1':
-    #     splash.show()
+    splash = QSplashScreen()
+    splash.setPixmap(QPixmap(r'img/splash.jpg'))
+    if showSplash == '1':
+        splash.show()
 
     ex = ToolBox()
     ex.show()
-    # splash.finish(ex)  # 主界面加载完成后隐藏
-    # splash.deleteLater()
+    splash.finish(ex)  # 主界面加载完成后隐藏
+    splash.deleteLater()
     sys.exit(app.exec_())
