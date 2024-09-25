@@ -51,8 +51,10 @@ class AttendanceInterface(QWidget, Ui_attendance):
         font.setBold(True)
         self.late.setFont(font)
         self.workOver.setFont(font)
+        self.lake.setFont(font)
         self.late.setStyleSheet("QCheckBox { color: red; }")
         self.workOver.setStyleSheet("QCheckBox { color: blue; }")
+        self.lake.setStyleSheet("QCheckBox { color: #00BFFF; }")
 
         self.start_time = QTime(9, 0, 0)
         self.end_time = QTime(18, 0, 0)
@@ -84,6 +86,10 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.tableView.setBorderVisible(True)
         self.tableView.setBorderRadius(8)
         self.tableView.setWordWrap(False)
+        self.tableView.setColumnCount(3)
+        # 设置水平表头并隐藏垂直表头
+        self.tableView.setHorizontalHeaderLabels(['日期', '时间', '星期'])
+        self.tableView.verticalHeader().hide()
 
         # 设置当前时间
         self.startTime.setTime(self.start_time)
@@ -100,6 +106,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         # 监听复选框状态改变信号
         self.late.stateChanged.connect(lambda: self.showTable())
         self.workOver.stateChanged.connect(lambda: self.showTable())
+        self.lake.stateChanged.connect(lambda: self.showTable())
 
     def setTime(self):
         self.start_time = self.startTime.time
@@ -107,10 +114,9 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.showTable()
 
     def selectData(self):
-        self.get_attendance()
-        self.showTable()
         if connect:
-            print("")
+            self.get_attendance()
+            self.showTable()
             # json_array_from_redis = redis.get('attendanceID')
             # # 解析 JSON 字符串为数组
             # id_list = json.loads(json_array_from_redis)
@@ -128,21 +134,23 @@ class AttendanceInterface(QWidget, Ui_attendance):
             )
 
     def filter(self):
-        if not self.late.isChecked() and not self.workOver.isChecked():
+        if not self.late.isChecked() and not self.workOver.isChecked() and not self.lake.isChecked():
             self.datesTemp = copy.deepcopy(self.dates)
         else:
+            dates = self.dates[0]
             times = self.dates[1]
             indexList = []
             i = 0
             for time in times:
                 time = QTime.fromString(time, "HH:mm:ss")
-                if self.start < time < self.mid:
+                if self.start < time < self.mid and self.late.isChecked():
                     # 迟到
-                    if self.late.isChecked():
                         indexList.append(i)
-                elif self.over < time:
+                elif self.over < time and self.workOver.isChecked():
                     # 加班
-                    if self.workOver.isChecked():
+                        indexList.append(i)
+                elif "漏刷" in dates[i] and self.lake.isChecked():
+                    # 漏刷
                         indexList.append(i)
                 i = i + 1
 
@@ -153,15 +161,12 @@ class AttendanceInterface(QWidget, Ui_attendance):
                 self.datesTemp[2].append(self.dates[2][index])
 
     def showTable(self):
+        self.get_attendance()
         self.filter()
         dates = self.datesTemp
         if len(dates) > 0:
 
             self.tableView.setRowCount(len(dates[0]))
-            self.tableView.setColumnCount(3)
-            # 设置水平表头并隐藏垂直表头
-            self.tableView.setHorizontalHeaderLabels(['日期', '时间', '星期'])
-            self.tableView.verticalHeader().hide()
             for i, date in enumerate(dates):
                 self.tableView.setColumnWidth(i, 180)
                 for j in range(len(date)):
@@ -254,29 +259,29 @@ class AttendanceInterface(QWidget, Ui_attendance):
                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
                    }
 
-        response = requests.post(url=url, data=data, headers=headers)
-
-        text = response.text
-        print(text)
-        # 定义正则表达式
-        date_pattern = r'\d{4}-\d{2}-\d{2}'
-        time_pattern = r'\"(\d{1,2}:\d{2}(?::\d{2})?)\"'
-
-        # 使用正则表达式提取日期
-        dates = re.findall(date_pattern, text)
-        times = re.findall(time_pattern, text)
-        # dates = ['2024-09-02', '2024-09-02', '2024-09-03', '2024-09-03', '2024-09-04', '2024-09-04', '2024-09-05',
-        #          '2024-09-05', '2024-09-06', '2024-09-06', '2024-09-09', '2024-09-09', '2024-09-10', '2024-09-10',
-        #          '2024-09-11', '2024-09-11', '2024-09-12', '2024-09-12', '2024-09-13', '2024-09-13', '2024-09-18',
-        #          '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20']
-        # times = ['09:03:29', '18:09:40', '08:52:57', '18:08:59', '08:51:38', '18:31:32', '08:39:16', '18:08:30',
-        #          '08:42:17', '18:36:55', '08:52:39', '18:22:58', '08:53:01', '18:21:48', '09:01:15', '18:06:58',
-        #          '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '21:13:14', '08:51:12', '18:14:49',
-        #          '08:49:49']
+        # response = requests.post(url=url, data=data, headers=headers)
+        #
+        # text = response.text
+        # # print(text)
+        # # 定义正则表达式
+        # date_pattern = r'\d{4}-\d{2}-\d{2}'
+        # time_pattern = r'\"(\d{1,2}:\d{2}(?::\d{2})?)\"'
+        #
+        # # 使用正则表达式提取日期
+        # dates = re.findall(date_pattern, text)
+        # times = re.findall(time_pattern, text)
+        dates = ['2024-09-02', '2024-09-03', '2024-09-03', '2024-09-04', '2024-09-04', '2024-09-05',
+                 '2024-09-05', '2024-09-06', '2024-09-06', '2024-09-09', '2024-09-09', '2024-09-10', '2024-09-10',
+                 '2024-09-11', '2024-09-11', '2024-09-12', '2024-09-12', '2024-09-13', '2024-09-13', '2024-09-18',
+                 '2024-09-18', '2024-09-19', '2024-09-19', '2024-09-20']
+        times = ['09:03:29', '08:52:57', '18:08:59', '08:51:38', '18:31:32', '08:39:16', '18:08:30',
+                 '08:42:17', '18:36:55', '08:52:39', '18:22:58', '08:53:01', '18:21:48', '09:01:15', '18:06:58',
+                 '08:58:59', '18:08:05', '08:48:26', '18:18:08', '09:02:11', '21:13:14', '08:51:12', '18:14:49',
+                 '08:12:49']
 
         # 打印提取的日期
-        print("日期", dates)
-        print("时间", times)
+        # print("日期", dates)
+        # print("时间", times)
         data = [[], [], []]
         weeks = []
         for date in dates:
@@ -319,7 +324,7 @@ def process_dates(dates):
         # 检查当前日期出现的次数
         if date_counts[date] == 1:
             # 如果只出现一次，加上“漏刷”
-            result.append( '(漏刷)'+date )
+            result.append('(漏刷)' + date)
         else:
             # 否则直接添加日期
             result.append(date)
