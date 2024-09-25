@@ -54,8 +54,8 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.workOver.setStyleSheet("QCheckBox { color: blue; }")
         self.lake.setStyleSheet("QCheckBox { color: #00BFFF; }")
 
-        self.start_time = QTime(9, 0, 0)
-        self.end_time = QTime(18, 0, 0)
+        self.start_time = QTime.fromString(conf.get("startTime"), "HH:mm:ss")
+        self.end_time = QTime.fromString(conf.get("endTime"), "HH:mm:ss")
         self.id.setPlaceholderText("请输入工号")
         self.id.returnPressed.connect(lambda :self.selectData())
 
@@ -110,6 +110,9 @@ class AttendanceInterface(QWidget, Ui_attendance):
     def setTime(self):
         self.start_time = self.startTime.time
         self.end_time = self.endTime.time
+        conf.set("startTime",self.startTime.time.toString("HH:mm:ss"))
+        conf.set("endTime",self.endTime.time.toString("HH:mm:ss"))
+
         self.showTable()
 
     def selectData(self):

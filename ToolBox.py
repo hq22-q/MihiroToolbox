@@ -18,7 +18,6 @@ class ToolBox(SplitFluentWindow):
         super().__init__()
         self.setWindowTitle('工具箱')
         self.setWindowIcon(QIcon(FileHandler.getPackagePath('res/logo.ico')))
-        print(FileHandler.getPackagePath('res/logo.ico'))
         # 设置默认大小
         self.resize(800, 800)
         # 调整窗口在屏幕中央显示

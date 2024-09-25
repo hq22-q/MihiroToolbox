@@ -8,7 +8,7 @@ import utils.FileHandler
 
 class ConfigSetting:
     def __init__(self):
-        self.file = utils.FileHandler.getPackagePath('../res/toolbox.ini')
+        self.file = utils.FileHandler.getPackagePath('res/toolbox.ini')
         self.settings = qc.QSettings(self.file, qc.QSettings.IniFormat)
         self.settings.setIniCodec("UTF8")
 
@@ -25,9 +25,11 @@ class ConfigSetting:
 
 
     def init_info(self):
-        self.settings.setValue("theme", 1)
-        self.settings.setValue("splash", 1)
-        self.settings.setValue("id", "")
+        self.set("theme", 1)
+        self.set("splash", 1)
+        self.set("id", "")
+        self.set("startTime","09:00:00")
+        self.set("endTime","18:00:00")
 
 def getExePath():
     sap = '/'
