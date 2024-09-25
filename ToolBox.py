@@ -1,14 +1,14 @@
 # coding:utf-8
 import sys
-import configparser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QSplashScreen, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QSplashScreen, QDesktopWidget
 from qfluentwidgets import SplitFluentWindow, FluentIcon, NavigationItemPosition, setTheme, Theme
 
 from AttendanceInterface import AttendanceInterface
 from SettingInterface import SettingInterface
+from utils import FileHandler
 from utils.ConfigSetting import ConfigSetting
 
 
@@ -17,11 +17,10 @@ class ToolBox(SplitFluentWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('工具箱')
-        self.setWindowIcon(QIcon('img/logo.png'))
-
+        self.setWindowIcon(QIcon(FileHandler.getPackagePath('res/logo.ico')))
+        print(FileHandler.getPackagePath('res/logo.ico'))
         # 设置默认大小
         self.resize(800, 800)
-
         # 调整窗口在屏幕中央显示
         center_pointer = QDesktopWidget().availableGeometry().center()
         x = center_pointer.x()
@@ -61,8 +60,9 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
+
     splash = QSplashScreen()
-    splash.setPixmap(QPixmap(r'img/splash.jpg'))
+    splash.setPixmap(QPixmap(FileHandler.getPackagePath('res/splash.jpg')))
     if showSplash == '1':
         splash.show()
 

@@ -3,10 +3,12 @@ import sys
 
 import PyQt5.QtCore as qc
 
+import utils.FileHandler
+
 
 class ConfigSetting:
     def __init__(self):
-        self.file = getExePath() + r"\toolbox.ini"
+        self.file = utils.FileHandler.getPackagePath('../res/toolbox.ini')
         self.settings = qc.QSettings(self.file, qc.QSettings.IniFormat)
         self.settings.setIniCodec("UTF8")
 

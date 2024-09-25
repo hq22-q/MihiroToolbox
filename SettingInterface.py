@@ -1,11 +1,7 @@
 # coding:utf-8
-import configparser
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import QWidget
-from qfluentwidgets import InfoBarIcon, InfoBar, PushButton, setTheme, Theme, FluentIcon, InfoBarPosition, \
-    InfoBarManager
+from qfluentwidgets import setTheme, Theme
 
 from UI.Ui_setting import Ui_setting
 from utils.ConfigSetting import ConfigSetting

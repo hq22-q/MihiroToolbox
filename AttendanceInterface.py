@@ -1,18 +1,17 @@
-import configparser
 import copy
+import json
+import re
 from collections import Counter
 from datetime import datetime
 
 import redis
+import requests
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QDate, QTime
+from PyQt5.QtCore import Qt, QTime
 from PyQt5.QtGui import QBrush, QFont, QColor
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem
-import json
-import re
-import requests
 from adodbapi import connect
-from qfluentwidgets import InfoBar, InfoBarPosition, window
+from qfluentwidgets import InfoBar, InfoBarPosition
 
 from UI.Ui_attendance import Ui_attendance
 from utils.ConfigSetting import ConfigSetting
@@ -58,6 +57,7 @@ class AttendanceInterface(QWidget, Ui_attendance):
         self.start_time = QTime(9, 0, 0)
         self.end_time = QTime(18, 0, 0)
         self.id.setPlaceholderText("请输入工号")
+        self.id.returnPressed.connect(lambda :self.selectData())
 
         # 定义比较的时间
         self.start = self.start_time
